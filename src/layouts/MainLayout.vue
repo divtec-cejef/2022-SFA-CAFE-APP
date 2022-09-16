@@ -46,26 +46,67 @@
     </q-header>
     <q-drawer
       v-model="drawer"
-      :width="200"
+      :width="500"
       :breakpoint="500"
       overlay
       bordered
-      class="bg-grey-3 inset-shadow"
+      class="bg-grey-1 inset-shadow"
       side="right"
     >
-      <q-scroll-area class="fit">
+      <q-scroll-area class="fit q-px-lg">
+        <div class="row">
+          <div class="col-10">
+            <h5>Historique</h5>
+          </div>
+          <div class="col-auto q-my-auto q-ml-auto">
+            <q-btn round icon="clear" class="q-mr-md" @click="drawer = !drawer"></q-btn>
+          </div>
+        </div>
         <q-list>
-          <template v-for="(menuItem, index) in listeTransactions" :key="index">
-            <q-item clickable :active="menuItem.label === 'Outbox'" v-ripple>
-              <q-item-section avatar>
-                <q-icon :name="menuItem.icon" />
-              </q-item-section>
-              <q-item-section>
-                {{ menuItem.label }}
-              </q-item-section>
-            </q-item>
-            <q-separator :key="'sep' + index" v-if="menuItem.separator" />
-          </template>
+          <q-card class="my-card q-mx-xs q-mb-md" flat bordered>
+            <q-card-section horizontal class="q-ml-sm">
+              <q-card-section class="q-pt-sm q-pb-md col-10">
+                <div class="text-overline">Achat | 16.09.2022 15:08</div>
+
+                <q-card-section horizontal>
+                  <q-card-section class="q-py-xs q-px-none col-7">
+                    <div class="q-mt-sm q-mb-xs">Achat de café</div>
+                    <div class="q-mt-sm">Prix : <span class="text-red-10">4 CHF</span></div>
+                  </q-card-section>
+
+                  <q-card-section class="q-pt-xs col-3">
+                      <div class="q-mt-sm text-">Quantité : <span class="">4</span></div>
+                  </q-card-section>
+                </q-card-section>
+              </q-card-section>
+
+              <q-separator vertical />
+
+              <q-card-actions vertical class="justify-around q-px-md col-2">
+                <q-btn flat round color="red" icon="delete" />
+              </q-card-actions>
+            </q-card-section>
+          </q-card>
+          <q-card class="my-card q-ma-xs" flat bordered>
+            <q-card-section horizontal class="q-ml-sm">
+              <q-card-section class="q-pt-sm q-pb-md col-10">
+                <div class="text-overline">Versement | 16.09.2022 14:43</div>
+
+                <q-card-section horizontal>
+                  <q-card-section class="q-py-xs q-px-none col-7">
+                    <div class="q-mt-sm q-mb-xs">Achat de touillettes</div>
+                    <div class="q-mt-sm">Montant : <span class="text-green-10">20 CHF</span></div>
+                  </q-card-section>
+                </q-card-section>
+              </q-card-section>
+
+              <q-separator vertical />
+
+              <q-card-actions vertical class="justify-around q-px-md col-2">
+                <q-btn flat round color="red" icon="delete" />
+              </q-card-actions>
+            </q-card-section>
+          </q-card>
         </q-list>
       </q-scroll-area>
     </q-drawer>
@@ -92,7 +133,7 @@ export default defineComponent({
   setup () {
     return {
       confirm: ref(false),
-      drawer: ref(false)
+      drawer: ref(true)
     }
   },
   methods: {
