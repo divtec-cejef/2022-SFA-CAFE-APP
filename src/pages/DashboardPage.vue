@@ -24,6 +24,12 @@
       </div>
       <div class="col-4 q-mt-xl">
         <div class="row">
+          <span id="solde" class="q-mx-auto ">
+            Solde :
+            <span :class="this.userSolde < 0 ? 'text-red-10' : 'text-green-7'">{{this.userSolde }}</span> CHF
+          </span>
+        </div>
+        <div class="row">
           <img src="~assets/home.jpg" alt="avatar" class="q-mx-auto">
         </div>
         <div class="row q-mb-xl">
@@ -81,7 +87,7 @@
 <script>
 
 import { useQuasar } from 'quasar'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { ref } from 'vue'
 
 export default {
@@ -91,7 +97,7 @@ export default {
       cafe: {
         libelle: 'Achat de café',
         quantite: 1,
-        prix: 0.5
+        prix: 0.85 // Prix du café
       },
       versement: {
         libelle: '',
@@ -105,7 +111,6 @@ export default {
   },
   setup () {
     const $q = useQuasar()
-
     return {
       versementForm: ref(false),
       showNotif () {
@@ -133,33 +138,46 @@ export default {
     }
   },
   methods: {
-    ...mapActions('userStore', ['achatCafe', 'effectuerVersement']),
+    ...mapActions('userStore', ['achatCafe', 'effectuerVersement', 'getHistorique', 'getUserSolde']),
     functionAchatCafe () {
       this.achatCafe(this.cafe)
       this.userNotifications.color = 'green'
       this.userNotifications.message = 'Votre achat a bien été effectué.'
       this.showNotif()
       this.cafe.quantite = 1
+      this.getHistorique()
+      this.getUserSolde()
     },
     functionVersement () {
       this.effectuerVersement(this.versement)
       this.userNotifications.color = 'green'
       this.userNotifications.message = 'Votre versement a bien été effectué.'
       this.showNotif()
+      this.getHistorique()
+      this.getUserSolde()
     },
     resetFormVersement () {
       this.versement.montant = ''
       this.versement.libelle = ''
     }
   },
+  computed: {
+    ...mapGetters('userStore', ['getSolde']),
+    userSolde () {
+      return this.getSolde
+    }
+  },
   mounted () {
     this.$q.dark.set(false)
     this.setUpWeather()
+    this.getUserSolde()
     // this.getInfosFromLocalStorage()
   }
 }
 </script>
 
 <style scoped>
-
+#solde {
+  font-size: 2.5em;
+}
 </style>

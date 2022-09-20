@@ -8,7 +8,9 @@ const state = {
     nom: '',
     prenom: '',
     token: null
-  }
+  },
+  listeTransactions: '',
+  solde: ''
 }
 
 /*
@@ -16,7 +18,14 @@ Mutations : méthode qui manipulent les données
 Les mutations ne peuvent pas être asynchrones !!!
  */
 const mutations = {
-
+  SET_USER (state, user) {
+  },
+  SET_LISTE_TRANSACTIONS (state, listeTransactions) {
+    state.listeTransactions = listeTransactions
+  },
+  SET_SOLDE (state, solde) {
+    state.solde = solde
+  }
 }
 
 /*
@@ -81,6 +90,34 @@ const actions = {
       .catch(error => {
         console.log(error)
       })
+  },
+  getHistorique ({ commit }) {
+    const config = {
+      headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
+    }
+    const id = window.localStorage.getItem('id')
+    api.get('api/utilisateur/' + id + '/historique', config)
+      .then(response => {
+        commit('SET_LISTE_TRANSACTIONS', response.data.Historique)
+      })
+      .catch(error => {
+        console.log(error)
+        return error
+      })
+  },
+  getUserSolde ({ commit }) {
+    const config = {
+      headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
+    }
+    const id = window.localStorage.getItem('id')
+    api.get('api/utilisateur/' + id + '/solde', config)
+      .then(response => {
+        commit('SET_SOLDE', response.data.Solde.toFixed(2))
+      })
+      .catch(error => {
+        console.log(error)
+        return error
+      })
   }
 }
 
@@ -90,7 +127,12 @@ Fonctionne comme les propriétés calculées
 Sert à calculer, trier, filtrer ou formater les donneés
  */
 const getters = {
-
+  getTransactions (state) {
+    return state.listeTransactions
+  },
+  getSolde (state) {
+    return state.solde
+  }
 }
 
 /*
