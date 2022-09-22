@@ -8,7 +8,7 @@ import axios from 'axios'
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  baseURL: 'http://localhost:8000/',
+  baseURL: 'https://api-cafe.divtec.me/',
   // timeout: 5000,
   headers: {
     Accept: 'application/json',
