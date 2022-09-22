@@ -8,7 +8,8 @@ const state = {
   notification: {
     message: '',
     color: ''
-  }
+  },
+  formRegisterActive: false
 }
 
 /*
@@ -35,6 +36,9 @@ const mutations = {
   RESET_NOTIFICATION (state) {
     state.notification.message = ''
     state.notification.color = ''
+  },
+  CHANGE_FORM_LOGIN_STATE (state) {
+    state.formRegisterActive = !state.formRegisterActive
   }
 }
 
@@ -46,13 +50,14 @@ const actions = {
   async registerUser ({ commit }, payload) {
     let data = ''
     Loading.show()
-    await api.post('api/utilisateur/register', payload)
+    await api.post('utilisateur/register', payload)
       .then(response => {
         Loading.hide()
         data = {
           color: 'green',
-          message: response.data.Message
+          message: response.data.message
         }
+        commit('CHANGE_FORM_LOGIN_STATE')
         commit('SET_NOTIFICATION', data)
       })
       .catch(error => {
@@ -66,7 +71,7 @@ const actions = {
   },
   async loginUser ({ commit }, payload) {
     Loading.show()
-    await api.post('api/utilisateur/login', payload)
+    await api.post('utilisateur/login', payload)
       .then(response => {
         Loading.hide()
         // Ajoute les informations utilisateur et les infos importantes dans le localStorage
@@ -83,16 +88,16 @@ const actions = {
         commit('SET_NOTIFICATION', data)
       })
   },
-  achatCafe ({ commit }, payload) {
+  async achatCafe ({ commit }, payload) {
     const config = {
       headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
     }
     const id = window.localStorage.getItem('id')
-    api.post('api/utilisateur/' + id + '/achat', payload, config)
+    await api.post('utilisateur/' + id + '/achat', payload, config)
       .then(response => {
         const data = {
           color: 'green',
-          message: response.data.Message
+          message: response.data.message
         }
         commit('SET_NOTIFICATION', data)
       })
@@ -104,15 +109,13 @@ const actions = {
     const config = {
       headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
     }
-    let url = 'api/delete/'
-    console.log(transactionOptions.id)
-    console.log(transactionOptions.type)
+    let url = 'delete/'
     url += transactionOptions.type === 'Achat' ? 'achat/' : 'versement/'
     await api.delete(url + transactionOptions.id, config)
       .then(response => {
         const data = {
           color: 'green',
-          message: response.data.Message
+          message: response.data.message
         }
         commit('SET_NOTIFICATION', data)
       })
@@ -120,16 +123,16 @@ const actions = {
         console.log(error)
       })
   },
-  effectuerVersement ({ commit }, payload) {
+  async effectuerVersement ({ commit }, payload) {
     const config = {
       headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
     }
     const id = window.localStorage.getItem('id')
-    api.post('api/utilisateur/' + id + '/versement', payload, config)
+    await api.post('utilisateur/' + id + '/versement', payload, config)
       .then(response => {
         const data = {
           color: 'green',
-          message: response.data.Message
+          message: response.data.message
         }
         commit('SET_NOTIFICATION', data)
       })
@@ -142,9 +145,9 @@ const actions = {
       headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
     }
     const id = window.localStorage.getItem('id')
-    api.get('api/utilisateur/' + id + '/historique', config)
+    api.get('utilisateur/' + id + '/historique', config)
       .then(response => {
-        commit('SET_LISTE_TRANSACTIONS', response.data.Historique)
+        commit('SET_LISTE_TRANSACTIONS', response.data)
       })
       .catch(error => {
         console.log(error)
@@ -157,10 +160,10 @@ const actions = {
       headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
     }
     const id = window.localStorage.getItem('id')
-    await api.get('api/utilisateur/' + id + '/solde', config)
+    await api.get('utilisateur/' + id + '/solde', config)
       .then(response => {
         Loading.hide()
-        commit('SET_SOLDE', response.data.Solde.toFixed(2))
+        commit('SET_SOLDE', response.data.solde.toFixed(2))
       })
       .catch(error => {
         Loading.hide()
@@ -190,6 +193,9 @@ const getters = {
       message: state.notification.message,
       color: state.notification.color
     }
+  },
+  getFormRegisterState (state) {
+    return state.formRegisterActive
   }
 }
 
