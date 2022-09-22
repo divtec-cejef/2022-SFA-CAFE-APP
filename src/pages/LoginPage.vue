@@ -15,19 +15,19 @@
         <q-card-section>
           <div class="q-pt-lg">
             <div class="col flex justify-center q-pt-sm">
-              <h2 class="text-h3 q-my-none text-weight-regular q-py-sm" style="max-width: 100%; font-size: calc(12px + 1.5vh + 1vw)">
-                {{ registerForm ? 'Créer un compte' : 'Login'}}
+              <h2 class="text-h4 q-my-none text-weight-regular q-py-sm" style="max-width: 100%; font-size: calc(12px + 1.5vh + 1vw)">
+                {{ formState ? 'Créer un compte' : 'Login'}}
               </h2>
             </div>
           </div>
         </q-card-section>
         <q-card-section>
           <div >
-            <FormRegisterComponent v-if="registerForm"/>
+            <FormRegisterComponent v-if="formState"/>
             <FormLoginComponent v-else/>
             <div class="text-center q-mt-sm q-gutter-lg">
-              <a class="text-white createAccountButton" @click="registerForm = !registerForm">
-                {{ registerForm ? 'Se connecter ?' : 'Créer un compte ?' }}
+              <a class="text-white createAccountButton" @click="formLoginState">
+                {{ formState ? 'Se connecter ?' : 'Créer un compte ?' }}
               </a>
             </div>
           </div>
@@ -41,17 +41,25 @@
 
 import FormLoginComponent from 'components/FormLoginComponent'
 import FormRegisterComponent from 'components/FormRegisterComponent'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'LoginPage',
   components: { FormRegisterComponent, FormLoginComponent },
-  data () {
-    return {
-      registerForm: false
-    }
-  },
   mounted () {
     this.$q.dark.set(true)
+  },
+  methods: {
+    ...mapMutations('userStore', ['CHANGE_FORM_LOGIN_STATE']),
+    formLoginState () {
+      this.CHANGE_FORM_LOGIN_STATE()
+    }
+  },
+  computed: {
+    ...mapGetters('userStore', ['getFormRegisterState']),
+    formState () {
+      return this.getFormRegisterState
+    }
   }
 }
 </script>

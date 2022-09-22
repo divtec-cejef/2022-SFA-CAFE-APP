@@ -5,7 +5,7 @@
         <div class="text-overline">{{ type }} | {{ date }}</div>
 
         <q-card-section horizontal>
-          <q-card-section class="q-py-xs q-px-none col-7">
+          <q-card-section :class="quantite ? 'col-7' : 'col-12'" class="q-py-xs q-px-none">
             <div class="q-mt-sm q-mb-xs">{{ libelle }}</div>
             <div class="q-mt-sm">Prix : <span :class="quantite ? 'text-red-10' : 'text-green-7'">{{ montant.toFixed(2) }} CHF</span></div>
           </q-card-section>
@@ -86,11 +86,7 @@ export default {
   methods: {
     ...mapActions('userStore', ['supprimerTransaction', 'getHistorique', 'getUserSolde']),
     async removeTransaction () {
-      console.log(this.id)
-      console.log(this.type)
-      await this.supprimerTransaction({
-        id: this.id, type: this.type
-      })
+      await this.supprimerTransaction({ id: this.id, type: this.type })
       this.getHistorique()
       await this.getUserSolde()
       this.showNotif()

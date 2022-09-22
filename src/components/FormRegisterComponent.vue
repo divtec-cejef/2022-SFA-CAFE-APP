@@ -21,17 +21,41 @@
       type="text"
       v-model="registerForm.email"
       lazy-rules
-      :rules="[ val => val && val.length > 0 || 'Veuillez renseigner votre e-mail.']"/>
+      :rules="[ val => validateEmail (val) || 'Veuillez renseigner un e-mail valide.']"/>
     <q-input
       ref="passwordForm"
       label="Mot de passe *"
       type="password"
       v-model="registerForm.password"
       lazy-rules
-      :rules="[ val => val && val.length > 0 || 'Veuillez renseigner votre mot de passe.']"/>
-    <div>
-      <q-btn class="full-width" color="primary" label="Créer mon compte" type="submit" rounded/>
+      :rules="[ val => validatePassword(val) || 'Password must meet all criteria.']"/>
+    <div class="password-criteria q-pa-sm">
+      <div class="text-subtitle2 q-mb-sm">Critères mot de passe :</div>
+      <div>
+        <q-icon
+          :name="this.checkPassword.length ? 'check_circle' : 'cancel'"
+          :color="this.checkPassword.length ? 'positive' : 'negative'"
+        ></q-icon>
+        Doit contenir 7 caractères ou plus.
+      </div>
+      <div>
+        <q-icon
+          :name="this.checkPassword.capital ? 'check_circle' : 'cancel'"
+          :color="this.checkPassword.capital ? 'positive' : 'negative'"
+        ></q-icon>
+        Doit contenir une majuscule.
+      </div>
+      <div>
+        <q-icon
+          :name="this.checkPassword.number ? 'check_circle' : 'cancel'"
+          :color="this.checkPassword.number ? 'positive' : 'negative'"
+        ></q-icon>
+        Doit contenir un nombre.
+      </div>
     </div>
+      <div>
+        <q-btn class="full-width" color="primary" label="Créer mon compte" type="submit" rounded/>
+      </div>
   </q-form>
 </template>
 
@@ -48,6 +72,11 @@ export default {
         prenom: '',
         email: '',
         password: ''
+      },
+      checkPassword: {
+        length: false,
+        capital: false,
+        number: false
       }
     }
   },
@@ -69,6 +98,21 @@ export default {
       await this.registerUser(this.registerForm)
       this.showNotif()
       this.RESET_NOTIFICATION()
+    },
+    validateEmail (email) {
+      return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email)
+    },
+    validatePassword (password) {
+      // Teste longueur
+      this.checkPassword.length = this.registerForm.password.length >= 7
+
+      // Test majuscule
+      this.checkPassword.capital = /^(?=.*[A-Z]).*$/.test(password)
+
+      // Test nombre
+      this.checkPassword.number = /^(?=.*[0-9]).*$/.test(password)
+
+      return this.checkPassword
     }
   },
   computed: {
@@ -81,5 +125,8 @@ export default {
 </script>
 
 <style scoped>
-
+.password-criteria {
+  background-color: #c2613d;
+  border-radius: 0.5rem;
+}
 </style>
