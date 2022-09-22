@@ -136,17 +136,17 @@ export default {
   methods: {
     ...mapActions('userStore', ['achatCafe', 'effectuerVersement', 'getHistorique', 'getUserSolde']),
     async functionAchatCafe () {
-      this.achatCafe(this.cafe)
+      await this.achatCafe(this.cafe)
       this.cafe.quantite = 1
       this.getHistorique()
       await this.getUserSolde()
       this.showNotif()
     },
     async functionVersement () {
-      this.effectuerVersement(this.versement)
+      await this.effectuerVersement(this.versement)
       this.getHistorique()
       await this.getUserSolde()
-      this.sh.owNotif()
+      this.showNotif()
     },
     resetFormVersement () {
       this.versement.montant = ''
