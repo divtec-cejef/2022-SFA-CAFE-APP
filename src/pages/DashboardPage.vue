@@ -102,10 +102,6 @@ export default {
       versement: {
         libelle: '',
         montant: ''
-      },
-      userNotifications: {
-        color: '',
-        message: ''
       }
     }
   },
@@ -115,8 +111,8 @@ export default {
       versementForm: ref(false),
       showNotif () {
         $q.notify({
-          message: this.userNotifications.message,
-          color: this.userNotifications.color
+          message: this.setNotification.message,
+          color: this.setNotification.color
         })
       },
       setUpWeather () {
@@ -139,22 +135,18 @@ export default {
   },
   methods: {
     ...mapActions('userStore', ['achatCafe', 'effectuerVersement', 'getHistorique', 'getUserSolde']),
-    functionAchatCafe () {
+    async functionAchatCafe () {
       this.achatCafe(this.cafe)
-      this.userNotifications.color = 'green'
-      this.userNotifications.message = 'Votre achat a bien été effectué.'
-      this.showNotif()
       this.cafe.quantite = 1
       this.getHistorique()
-      this.getUserSolde()
-    },
-    functionVersement () {
-      this.effectuerVersement(this.versement)
-      this.userNotifications.color = 'green'
-      this.userNotifications.message = 'Votre versement a bien été effectué.'
+      await this.getUserSolde()
       this.showNotif()
+    },
+    async functionVersement () {
+      this.effectuerVersement(this.versement)
       this.getHistorique()
-      this.getUserSolde()
+      await this.getUserSolde()
+      this.sh.owNotif()
     },
     resetFormVersement () {
       this.versement.montant = ''
@@ -162,9 +154,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('userStore', ['getSolde']),
+    ...mapGetters('userStore', ['getSolde', 'getNotification']),
     userSolde () {
       return this.getSolde
+    },
+    setNotification () {
+      return this.getNotification
     }
   },
   mounted () {

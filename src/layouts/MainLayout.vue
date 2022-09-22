@@ -64,6 +64,7 @@
         </div>
         <q-list>
           <HistoriqueComponent v-for="transaction in this.getListeTransactions" :key="transaction.id"
+                               :id="transaction.id"
                                :montant="transaction.prix ? transaction.prix * transaction.quantite : transaction.montant"
                                :libelle="transaction.libelle"
                                :date="transaction.created_at"
