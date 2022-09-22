@@ -62,8 +62,8 @@
             <q-btn round icon="clear" class="q-mr-md" @click="drawer = !drawer"></q-btn>
           </div>
         </div>
-        <q-list>
-          <HistoriqueComponent v-for="transaction in this.getListeTransactions" :key="transaction.id"
+        <q-list v-if="this.getListeTransactions.historique">
+          <HistoriqueComponent  v-for="transaction in this.getListeTransactions.historique" :key="transaction.id"
                                :id="transaction.id"
                                :montant="transaction.prix ? transaction.prix * transaction.quantite : transaction.montant"
                                :libelle="transaction.libelle"
@@ -71,6 +71,9 @@
                                :type="transaction.quantite ? 'Achat' : 'Versement'"
                                :quantite="transaction.quantite ? transaction.quantite : null"/>
         </q-list>
+        <span v-else>
+          {{ this.getListeTransactions.message }}
+        </span>
       </q-scroll-area>
     </q-drawer>
     <q-page-container>
