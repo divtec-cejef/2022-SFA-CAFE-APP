@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="row q-ma-md absolute-full">
-      <div class="col-4 q-px-xl q-my-auto">
+      <div class="col-4 q-px-xl q-my-auto desktop-only">
         <div class="tomorrow"
              data-location-id="018319"
              data-language="FR"
@@ -22,23 +22,23 @@
           </a>
         </div>
       </div>
-      <div class="col-4 q-mt-xl">
+      <div class="col-auto q-mt-xl">
         <div class="row">
-          <span id="solde" class="q-mx-auto ">
+          <span id="solde" class="q-mx-auto">
             Solde :
             <span :class="this.userSolde < 0 ? 'text-red-10' : 'text-green-7'">{{this.userSolde }}</span> CHF
           </span>
         </div>
         <div class="row">
-          <img src="~assets/home.jpg" alt="avatar" class="q-mx-auto">
+          <img src="~assets/home.jpg" alt="avatar" id="imgCafe" class="q-mx-auto q-mt-lg">
         </div>
         <div class="row q-mb-xl">
-          <q-btn-group push class="q-mx-auto">
-            <q-btn :disable="cafe.quantite === 1" push text-color="white" color="secondary" icon="remove" size="xl" @click="cafe.quantite--" glossy style="border-right: 1px solid wheat"/>
-            <q-btn push color="secondary" size="xl" @click="functionAchatCafe" no-caps glossy>
+          <q-btn-group push class="q-mx-auto q-mt-lg">
+            <q-btn :disable="cafe.quantite === 1" push text-color="white" color="secondary" icon="remove" :size="this.$q.platform.is.mobile ? 'lg' : 'xl'" @click="cafe.quantite--" glossy style="border-right: 1px solid wheat"/>
+            <q-btn push color="secondary" :size="this.$q.platform.is.mobile ? 'lg' : 'xl'" @click="functionAchatCafe" no-caps glossy>
               Acheter {{cafe.quantite}} café<span v-if="cafe.quantite > 1">s</span>
             </q-btn>
-            <q-btn :disable="cafe.quantite === 20" push text-color="white" color="secondary" icon="add" size="xl" @click="cafe.quantite++" glossy style="border-left: 1px solid wheat"/>
+            <q-btn :disable="cafe.quantite === 20" push text-color="white" color="secondary" icon="add" :size="this.$q.platform.is.mobile ? 'lg' : 'xl'" @click="cafe.quantite++" glossy style="border-left: 1px solid wheat"/>
           </q-btn-group>
         </div>
         <div class="row">
@@ -77,9 +77,7 @@
           </q-dialog>
         </div>
       </div>
-      <div id="historique" class="col-4">
-
-      </div>
+      <div id="historique" class="col-4 desktop-only"/>
     </div>
   </q-page>
 </template>
@@ -174,5 +172,9 @@ export default {
 <style scoped>
 #solde {
   font-size: 2.5em;
+}
+
+#imgCafe {
+  max-width: 100%
 }
 </style>

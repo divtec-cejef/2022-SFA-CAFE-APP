@@ -5,12 +5,9 @@
         <q-avatar size="60px" class=" shadow-7 q-ml-md">
           <img src="~assets/avatar.jpg" alt="avatar">
         </q-avatar>
-        <q-toolbar-title id="title" class="q-ml-xs">
-          Pause Café
-        </q-toolbar-title>
-
-        <p id="bienvenueMessage" class="q-mb-none q-mr-xl">Bienvenue, {{ nom }} {{ prenom }} !</p>
-        <q-btn round icon="person" class="q-mx-lg header-icons">
+        <q-toolbar-title id="title" class="q-ml-xs desktop-only">Pause Café</q-toolbar-title>
+        <p id="bienvenueMessage" class="q-mb-none q-mr-xl desktop-only">Bienvenue, {{ nom }} {{ prenom }} !</p>
+        <q-btn round icon="person" class="q-ml-auto q-mr-lg header-icons">
           <q-menu
             transition-show="jump-down"
             transition-hide="jump-up"
@@ -29,7 +26,7 @@
         <q-dialog v-model="confirm" >
           <q-card>
             <q-card-section class="row items-center">
-              <q-avatar icon="logout" color="primary" text-color="white" />
+              <q-avatar class="desktop-only" icon="logout" color="primary" text-color="white" />
               <span class="q-ml-sm">Êtes-vous sûr de vouloir vous déconnecter ?</span>
             </q-card-section>
 
@@ -39,8 +36,8 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
-        <q-btn round icon="history" class="q-mr-lg header-icons" @click="drawer = !drawer">
-          <q-tooltip class="bg-accent">Afficher l'historique</q-tooltip>
+        <q-btn round :icon="this.$route.name === 'historique' ? 'dashboard' : 'history'" class="q-mr-lg header-icons" @click="historiqueButton">
+          <q-tooltip class="bg-accent desktop-only">Afficher l'historique</q-tooltip>
         </q-btn>
       </q-toolbar>
     </q-header>
@@ -108,6 +105,17 @@ export default defineComponent({
       // Récupération des informations stockées dans le local storage
       this.nom = localStorage.getItem('nom')
       this.prenom = localStorage.getItem('prenom')
+    },
+    historiqueButton () {
+      if (this.$q.platform.is.desktop) {
+        this.drawer = !this.drawer
+      } else {
+        if (this.$route.name === 'historique') {
+          this.$router.push({ path: '/dashboard' })
+        } else {
+          this.$router.push({ path: '/historique' })
+        }
+      }
     }
   },
   computed: {

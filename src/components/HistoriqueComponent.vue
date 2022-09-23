@@ -1,29 +1,26 @@
 <template>
   <q-card class="my-card q-mx-xs q-mb-md" flat bordered>
-    <q-card-section horizontal class="q-ml-sm">
-      <q-card-section class="q-pt-sm q-pb-md col-10">
+    <q-card-section v-if="!this.$q.platform.is.mobile" horizontal class="'q-ml-sm'">
+      <q-card-section class="q-pt-sm col-10 q-pb-md">
         <div class="text-overline">{{ type }} | {{ date }}</div>
 
-        <q-card-section horizontal>
+        <q-card-section horizontal >
           <q-card-section :class="quantite ? 'col-7' : 'col-12'" class="q-py-xs q-px-none">
             <div class="q-mt-sm q-mb-xs">{{ libelle }}</div>
             <div class="q-mt-sm">Prix : <span :class="quantite ? 'text-red-10' : 'text-green-7'">{{ montant.toFixed(2) }} CHF</span></div>
           </q-card-section>
-
-          <q-card-section class="q-pt-xs col-5" v-if="quantite">
+          <q-card-section class="q-pt-xs col-5 desktop-only" v-if="quantite">
             <div class="q-mt-sm text-">Quantité : <span>{{ quantite }}</span></div>
           </q-card-section>
         </q-card-section>
       </q-card-section>
-
       <q-separator vertical />
-
-      <q-card-actions vertical class="justify-around q-px-md col-2">
-        <q-btn flat round color="red" icon="delete" @click="confirm = true"/>
-        <q-dialog v-model="confirm" >
+      <q-card-actions vertical class="justify-around q-px-none col-2">
+        <q-btn flat round color="red" class="q-pa-none" icon="delete" @click="confirm = true"/>
+        <q-dialog v-model="confirm">
           <q-card>
             <q-card-section class="row items-center">
-              <q-avatar icon="delete" color="primary" text-color="white" />
+              <q-avatar class="desktop-only" icon="delete" color="primary" text-color="white" />
               <span class="q-ml-sm">Êtes-vous sûr de vouloir supprimer cette transaction ?</span>
             </q-card-section>
 
@@ -35,6 +32,73 @@
         </q-dialog>
       </q-card-actions>
     </q-card-section>
+
+    <q-card-section v-else class="q-py-xs">
+        <q-card-section horizontal>
+          <q-card-section id="titre" class="col-10 q-pa-none">
+            <div class="text-overline q-my-xs">{{ type }} | {{ date }}</div>
+          </q-card-section>
+          <q-card-section id="delete" class="col-2 q-pa-none">
+            <q-btn flat round color="red" class="float-right" icon="delete" @click="confirm = true"/>
+            <q-dialog v-model="confirm">
+              <q-card>
+                <q-card-section class="row items-center">
+                  <q-avatar class="desktop-only" icon="delete" color="primary" text-color="white" />
+                  <span class="q-ml-sm">Êtes-vous sûr de vouloir supprimer cette transaction ?</span>
+                </q-card-section>
+
+                <q-card-actions align="right">
+                  <q-btn flat label="Annuler" color="black" v-close-popup />
+                  <q-btn flat label="Supprimer" color="red" v-close-popup @click="removeTransaction"/>
+                </q-card-actions>
+              </q-card>
+            </q-dialog>
+          </q-card-section>
+        </q-card-section>
+
+        <q-card-section horizontal>
+          <q-card-section id="libelle" class="col-7 q-pa-none">
+            <div class="q-mt-sm q-mb-xs"><span v-if="quantite">{{ quantite }} x </span>{{ libelle }}</div>
+          </q-card-section>
+          <q-card-section id="prix" class="col-5 q-pa-none">
+            <div class="q-mt-sm float-right">Prix : <span :class="quantite ? 'text-red-10' : 'text-green-7'">{{ montant.toFixed(2) }} CHF</span></div>
+          </q-card-section>
+        </q-card-section>
+    </q-card-section>
+
+    <!--    <q-card-section v-else horizontal class="q-ml-none">-->
+    <!--      <q-card-section horizontal class="q-pt-sm col-10 q-pb-xs">-->
+    <!--        <q-card-section>-->
+    <!--          <div class="text-overline">{{ type }} | {{ date }}</div>-->
+    <!--        </q-card-section>-->
+    <!--        <q-card-section>-->
+    <!--          <div class="justify-around q-px-none col-2">-->
+    <!--            <q-btn flat round color="red" class="q-pa-none" icon="delete" @click="confirm = true"/>-->
+    <!--            <q-dialog v-model="confirm">-->
+    <!--              <q-card>-->
+    <!--                <q-card-section class="row items-center">-->
+    <!--                  <q-avatar class="desktop-only" icon="delete" color="primary" text-color="white" />-->
+    <!--                  <span class="q-ml-sm">Êtes-vous sûr de vouloir supprimer cette transaction ?</span>-->
+    <!--                </q-card-section>-->
+
+    <!--                <q-card-actions align="right">-->
+    <!--                  <q-btn flat label="Annuler" color="black" v-close-popup />-->
+    <!--                  <q-btn flat label="Supprimer" color="red" v-close-popup @click="removeTransaction"/>-->
+    <!--                </q-card-actions>-->
+    <!--              </q-card>-->
+    <!--            </q-dialog>-->
+    <!--          </div>-->
+    <!--        </q-card-section>-->
+    <!--      </q-card-section>-->
+    <!--      <q-card-section horizontal>-->
+    <!--        <q-card-section class="col-6 q-py-xs q-pr-xs q-pl-none">-->
+    <!--          <div class="q-mt-sm q-mb-xs">{{ libelle }}</div>-->
+    <!--        </q-card-section>-->
+    <!--        <q-card-section class="col-6 q-py-xs q-pr-none q-pl-xs">-->
+    <!--          <div class="q-mt-sm">Prix : <span :class="quantite ? 'text-red-10' : 'text-green-7'">{{ montant.toFixed(2) }} CHF</span></div>-->
+    <!--        </q-card-section>-->
+    <!--      </q-card-section>-->
+    <!--    </q-card-section>-->
   </q-card>
 </template>
 
