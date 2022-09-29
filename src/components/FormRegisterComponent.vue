@@ -1,20 +1,28 @@
 <template>
   <q-form class="q-gutter-md" @submit.prevent="submitForm">
-    <q-input
-      autofocus
-      ref="nomForm"
-      label="Nom *"
-      type="text"
-      v-model="registerForm.nom"
-      lazy-rules
-      :rules="[ val => val && val.length > 0 || 'Veuillez renseigner votre nom.']"/>
-    <q-input
-      ref="prenomForm"
-      label="Prénom *"
-      type="text"
-      v-model="registerForm.prenom"
-      lazy-rules
-      :rules="[ val => val && val.length > 0 || 'Veuillez renseigner votre prénom.']"/>
+    <div class="row items-start">
+      <q-input
+        autofocus
+        ref="nomForm"
+        label="Nom *"
+        type="text"
+        v-model="registerForm.nom"
+        lazy-rules
+        :rules="[ val => val && val.length > 0 || 'Veuillez renseigner votre nom.']"
+        class="q-pr-sm"
+        style="max-width: 50%"
+      />
+      <q-input
+        ref="prenomForm"
+        label="Prénom *"
+        type="text"
+        v-model="registerForm.prenom"
+        lazy-rules
+        :rules="[ val => val && val.length > 0 || 'Veuillez renseigner votre prénom.']"
+        class="q-pl-sm"
+        style="max-width: 50%"
+      />
+    </div>
     <q-input
       ref="emailForm"
       label="E-mail *"
@@ -28,7 +36,7 @@
       type="password"
       v-model="registerForm.password"
       lazy-rules
-      :rules="[ val => validatePassword(val) || 'Password must meet all criteria.']"/>
+      :rules="[ val => validatePassword (val) || 'Le mot de passe ne remplit pas tous les critères.']"/>
     <div class="password-criteria q-pa-sm">
       <div class="text-subtitle2 q-mb-sm">Critères mot de passe :</div>
       <div>
@@ -60,8 +68,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { useQuasar } from 'quasar'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'FormRegisterComponent',
@@ -80,24 +87,10 @@ export default {
       }
     }
   },
-  setup () {
-    const $q = useQuasar()
-    return {
-      showNotif () {
-        $q.notify({
-          message: this.setNotification.message,
-          color: this.setNotification.color
-        })
-      }
-    }
-  },
   methods: {
     ...mapActions('userStore', ['registerUser']),
-    ...mapMutations('userStore', ['RESET_NOTIFICATION']),
-    async submitForm () {
-      await this.registerUser(this.registerForm)
-      this.showNotif()
-      this.RESET_NOTIFICATION()
+    submitForm () {
+      this.registerUser(this.registerForm)
     },
     validateEmail (email) {
       return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email)
@@ -112,13 +105,9 @@ export default {
       // Test nombre
       this.checkPassword.number = /^(?=.*[0-9]).*$/.test(password)
 
-      return this.checkPassword
-    }
-  },
-  computed: {
-    ...mapGetters('userStore', ['getNotification']),
-    setNotification () {
-      return this.getNotification
+      return this.checkPassword.length &&
+             this.checkPassword.capital &&
+             this.checkPassword.number
     }
   }
 }

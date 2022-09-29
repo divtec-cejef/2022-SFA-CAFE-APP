@@ -4,9 +4,10 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/DashboardPage.vue'), meta: { requiresAuth: true }, name: 'dashboard' },
+      { path: '', component: () => import('pages/DashboardPage.vue'), meta: { requiresAuth: true }, name: '' },
       { path: '/dashboard', component: () => import('pages/DashboardPage.vue'), meta: { requiresAuth: true }, name: 'dashboard' },
-      { path: '/historique', component: () => import('pages/HistoriqueMobilePage.vue'), meta: { requiresAuth: true }, name: 'historique' }
+      { path: '/historique', component: () => import('pages/HistoriqueMobilePage.vue'), meta: { requiresAuth: true }, name: 'historique' },
+      { path: '/settings', component: () => import('pages/AdminPage.vue'), meta: { requiresAuth: true }, name: 'settings' }
     ]
   },
   {

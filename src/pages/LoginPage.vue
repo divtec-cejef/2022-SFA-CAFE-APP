@@ -1,6 +1,6 @@
 <template>
   <img src="~assets/wave.png" class="wave" alt="registerForm-wave">
-  <div class="row" style="height: 90vh">
+  <div class="window-height window-width row">
     <div class="col-0 col-md-6 flex justify-center content-center">
       <q-img round src="~assets/login.svg" class="responsive" alt="registerForm-image"/>
     </div>
@@ -8,16 +8,16 @@
          class="col-12 col-md-6 flex content-center">
       <q-card v-bind:style="$q.screen.lt.sm ? {'width': '80%'} : {'width': '50%'}">
         <q-card-section>
-          <q-avatar size="103px" class="absolute-center shadow-10">
+          <q-avatar size="100px" class="absolute-center shadow-10 q-mt-md">
             <img src="~assets/avatar.jpg" alt="avatar">
           </q-avatar>
         </q-card-section>
         <q-card-section>
           <div class="q-pt-lg">
             <div class="col flex justify-center q-pt-sm">
-              <h2 class="text-h4 q-my-none text-weight-regular q-py-sm" style="max-width: 100%; font-size: calc(12px + 1.5vh + 1vw)">
+              <p class="q-my-none text-weight-regular q-py-sm" style="max-width: 100%; font-size: calc(10px + 1vh + 1vw)">
                 {{ formState ? 'Créer un compte' : 'Login'}}
-              </h2>
+              </p>
             </div>
           </div>
         </q-card-section>

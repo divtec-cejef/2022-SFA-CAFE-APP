@@ -65,63 +65,17 @@
           </q-card-section>
         </q-card-section>
     </q-card-section>
-
-    <!--    <q-card-section v-else horizontal class="q-ml-none">-->
-    <!--      <q-card-section horizontal class="q-pt-sm col-10 q-pb-xs">-->
-    <!--        <q-card-section>-->
-    <!--          <div class="text-overline">{{ type }} | {{ date }}</div>-->
-    <!--        </q-card-section>-->
-    <!--        <q-card-section>-->
-    <!--          <div class="justify-around q-px-none col-2">-->
-    <!--            <q-btn flat round color="red" class="q-pa-none" icon="delete" @click="confirm = true"/>-->
-    <!--            <q-dialog v-model="confirm">-->
-    <!--              <q-card>-->
-    <!--                <q-card-section class="row items-center">-->
-    <!--                  <q-avatar class="desktop-only" icon="delete" color="primary" text-color="white" />-->
-    <!--                  <span class="q-ml-sm">Êtes-vous sûr de vouloir supprimer cette transaction ?</span>-->
-    <!--                </q-card-section>-->
-
-    <!--                <q-card-actions align="right">-->
-    <!--                  <q-btn flat label="Annuler" color="black" v-close-popup />-->
-    <!--                  <q-btn flat label="Supprimer" color="red" v-close-popup @click="removeTransaction"/>-->
-    <!--                </q-card-actions>-->
-    <!--              </q-card>-->
-    <!--            </q-dialog>-->
-    <!--          </div>-->
-    <!--        </q-card-section>-->
-    <!--      </q-card-section>-->
-    <!--      <q-card-section horizontal>-->
-    <!--        <q-card-section class="col-6 q-py-xs q-pr-xs q-pl-none">-->
-    <!--          <div class="q-mt-sm q-mb-xs">{{ libelle }}</div>-->
-    <!--        </q-card-section>-->
-    <!--        <q-card-section class="col-6 q-py-xs q-pr-none q-pl-xs">-->
-    <!--          <div class="q-mt-sm">Prix : <span :class="quantite ? 'text-red-10' : 'text-green-7'">{{ montant.toFixed(2) }} CHF</span></div>-->
-    <!--        </q-card-section>-->
-    <!--      </q-card-section>-->
-    <!--    </q-card-section>-->
   </q-card>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import { useQuasar } from 'quasar'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'HistoriqueComponent',
   data () {
     return {
       confirm: false
-    }
-  },
-  setup () {
-    const $q = useQuasar()
-    return {
-      showNotif () {
-        $q.notify({
-          message: this.setNotification.message,
-          color: this.setNotification.color
-        })
-      }
     }
   },
   props: {
@@ -148,18 +102,9 @@ export default {
     quantite: Number
   },
   methods: {
-    ...mapActions('userStore', ['supprimerTransaction', 'getHistorique', 'getUserSolde']),
+    ...mapActions('userStore', ['supprimerTransaction']),
     async removeTransaction () {
       await this.supprimerTransaction({ id: this.id, type: this.type })
-      this.getHistorique()
-      await this.getUserSolde()
-      this.showNotif()
-    }
-  },
-  computed: {
-    ...mapGetters('userStore', ['getNotification']),
-    setNotification () {
-      return this.getNotification
     }
   }
 }

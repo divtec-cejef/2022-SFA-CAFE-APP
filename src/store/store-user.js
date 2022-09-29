@@ -1,15 +1,13 @@
 // State : données du magasin
 import { api } from 'boot/axios'
-import { Loading } from 'quasar'
+import { Loading, Notify } from 'quasar'
 
 const state = {
   listeTransactions: '',
   solde: '',
-  notification: {
-    message: '',
-    color: ''
-  },
-  formRegisterActive: false
+  formRegisterActive: false,
+  settings: '',
+  users: ''
 }
 
 /*
@@ -22,6 +20,7 @@ const mutations = {
     window.localStorage.setItem('id', user.id)
     window.localStorage.setItem('nom', user.nom)
     window.localStorage.setItem('prenom', user.prenom)
+    window.localStorage.setItem('is_admin', user.is_admin)
   },
   SET_LISTE_TRANSACTIONS (state, listeTransactions) {
     state.listeTransactions = listeTransactions
@@ -29,16 +28,14 @@ const mutations = {
   SET_SOLDE (state, solde) {
     state.solde = solde
   },
-  SET_NOTIFICATION (state, notification) {
-    state.notification.message = notification.message
-    state.notification.color = notification.color
-  },
-  RESET_NOTIFICATION (state) {
-    state.notification.message = ''
-    state.notification.color = ''
-  },
   CHANGE_FORM_LOGIN_STATE (state) {
     state.formRegisterActive = !state.formRegisterActive
+  },
+  SET_SETTINGS (state, settings) {
+    state.settings = settings
+  },
+  SET_LIST_USERS (state, users) {
+    state.users = users
   }
 }
 
@@ -46,27 +43,32 @@ const mutations = {
 Actions : méthodes du magasin qui font appel aux mutations
 Elles peuvent être asynchrones !
  */
+
+// Ajoute au Header le token utilisateur pour chaque action le nécessitant
+const config = {
+  headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
+}
+// Récupère l'ID utilisateur dans le localStorage du navigateur
+const id = window.localStorage.getItem('id')
+
 const actions = {
   async registerUser ({ commit }, payload) {
-    let data = ''
     Loading.show()
     await api.post('utilisateur/register', payload)
       .then(response => {
         Loading.hide()
-        data = {
+        commit('CHANGE_FORM_LOGIN_STATE')
+        Notify.create({
           color: 'green',
           message: response.data.message
-        }
-        commit('CHANGE_FORM_LOGIN_STATE')
-        commit('SET_NOTIFICATION', data)
+        })
       })
       .catch(error => {
         Loading.hide()
-        data = {
+        Notify.create({
           color: 'red',
           message: error.response.data.error
-        }
-        commit('SET_NOTIFICATION', data)
+        })
       })
   },
   async loginUser ({ commit }, payload) {
@@ -81,71 +83,62 @@ const actions = {
       })
       .catch(error => {
         Loading.hide()
-        const data = {
+        Notify.create({
           color: 'red',
           message: error.response.data.error
-        }
-        commit('SET_NOTIFICATION', data)
+        })
       })
   },
-  async achatCafe ({ commit }, payload) {
-    const config = {
-      headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
-    }
-    const id = window.localStorage.getItem('id')
-    await api.post('utilisateur/' + id + '/achat', payload, config)
-      .then(response => {
-        const data = {
+  achatCafe ({ dispatch }, payload) {
+    Loading.show()
+    api.post('utilisateur/' + id + '/achat', payload, config)
+      .then(async response => {
+        await dispatch('getHistorique')
+        await dispatch('getUserSolde')
+        Notify.create({
           color: 'green',
           message: response.data.message
-        }
-        commit('SET_NOTIFICATION', data)
+        })
+      })
+      .catch(error => {
+        console.log(error)
+        Loading.hide()
+      })
+  },
+  effectuerVersement ({ dispatch }, payload) {
+    Loading.show()
+    api.post('utilisateur/' + id + '/versement', payload, config)
+      .then(async response => {
+        await dispatch('getHistorique')
+        await dispatch('getUserSolde')
+        Notify.create({
+          color: 'green',
+          message: response.data.message
+        })
+      })
+      .catch(error => {
+        console.log(error)
+        Loading.hide()
+      })
+  },
+  async supprimerTransaction ({ dispatch }, transactionOptions) {
+    console.log(transactionOptions.type)
+    const type = transactionOptions.type === 'Achat' ? 'achat/' : 'versement/'
+    await api.delete('delete/' + type + transactionOptions.id, config)
+      .then(async response => {
+        await dispatch('getHistorique')
+        await dispatch('getUserSolde')
+        Notify.create({
+          color: 'green',
+          message: response.data.message
+        })
       })
       .catch(error => {
         console.log(error)
       })
   },
-  async supprimerTransaction ({ commit }, transactionOptions) {
-    const config = {
-      headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
-    }
-    let url = 'delete/'
-    url += transactionOptions.type === 'Achat' ? 'achat/' : 'versement/'
-    await api.delete(url + transactionOptions.id, config)
-      .then(response => {
-        const data = {
-          color: 'green',
-          message: response.data.message
-        }
-        commit('SET_NOTIFICATION', data)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  },
-  async effectuerVersement ({ commit }, payload) {
-    const config = {
-      headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
-    }
-    const id = window.localStorage.getItem('id')
-    await api.post('utilisateur/' + id + '/versement', payload, config)
-      .then(response => {
-        const data = {
-          color: 'green',
-          message: response.data.message
-        }
-        commit('SET_NOTIFICATION', data)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  },
-  getHistorique ({ commit }) {
-    const config = {
-      headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
-    }
-    const id = window.localStorage.getItem('id')
-    api.get('utilisateur/' + id + '/historique', config)
+  async getHistorique ({ commit }) {
+    await api.get('utilisateur/' + id + '/historique', config)
       .then(response => {
         commit('SET_LISTE_TRANSACTIONS', response.data)
       })
@@ -156,10 +149,6 @@ const actions = {
   },
   async getUserSolde ({ commit }) {
     Loading.show()
-    const config = {
-      headers: { Authorization: `Bearer ${window.localStorage.getItem('token')}` }
-    }
-    const id = window.localStorage.getItem('id')
     await api.get('utilisateur/' + id + '/solde', config)
       .then(response => {
         Loading.hide()
@@ -172,6 +161,29 @@ const actions = {
           // Redirige vers le login
           this.$router.push({ path: '/login' })
         }
+      })
+  },
+  getAdminSettings ({ commit }) {
+    api.get('administrateur/config', config)
+      .then(response => {
+        commit('SET_SETTINGS', response.data)
+        this.$router.push({ path: '/settings' })
+      })
+      .catch(error => {
+        this.$router.push({ path: '/dashboard' })
+        Notify.create({
+          message: error.response.data.error,
+          color: 'red'
+        })
+      })
+  },
+  async getAllUsers ({ commit }) {
+    await api.get('administrateur/utilisateurs', config)
+      .then(response => {
+        commit('SET_LIST_USERS', response.data)
+      })
+      .catch(error => {
+        console.log(error)
       })
   }
 }
@@ -188,14 +200,14 @@ const getters = {
   getSolde (state) {
     return state.solde
   },
-  getNotification (state) {
-    return {
-      message: state.notification.message,
-      color: state.notification.color
-    }
-  },
   getFormRegisterState (state) {
     return state.formRegisterActive
+  },
+  getSettings (state) {
+    return state.settings
+  },
+  getListUsers (state) {
+    return state.users
   }
 }
 

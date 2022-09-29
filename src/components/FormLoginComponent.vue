@@ -22,8 +22,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
-import { useQuasar } from 'quasar'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'FormLoginComponent',
@@ -35,32 +34,10 @@ export default {
       }
     }
   },
-  setup () {
-    const $q = useQuasar()
-    return {
-      showNotif () {
-        $q.notify({
-          message: this.setNotification.message,
-          color: this.setNotification.color
-        })
-      }
-    }
-  },
   methods: {
     ...mapActions('userStore', ['loginUser']),
-    ...mapMutations('userStore', ['RESET_NOTIFICATION']),
     async submitForm () {
       await this.loginUser(this.loginForm)
-      if (this.setNotification.message) {
-        this.showNotif()
-        this.RESET_NOTIFICATION()
-      }
-    }
-  },
-  computed: {
-    ...mapGetters('userStore', ['getNotification']),
-    setNotification () {
-      return this.getNotification
     }
   }
 }
