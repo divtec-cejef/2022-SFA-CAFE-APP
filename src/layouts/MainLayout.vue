@@ -2,9 +2,11 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated class="q-py-md">
       <q-toolbar>
-        <q-avatar size="60px" class=" shadow-7 q-ml-md">
-          <img src="~assets/avatar.jpg" alt="avatar">
-        </q-avatar>
+        <q-btn round class="q-ml-md" to="/dashboard">
+          <q-avatar size="65px" class=" shadow-7">
+            <img src="~assets/avatar.jpg" alt="avatar">
+          </q-avatar>
+        </q-btn>
         <q-toolbar-title id="title" class="q-ml-xs desktop-only">Pause Café</q-toolbar-title>
         <p id="bienvenueMessage" class="q-mb-none q-mr-xl desktop-only">Bienvenue, {{ nom }} {{ prenom }} !</p>
         <q-btn round icon="person" class="q-ml-auto q-mr-lg header-icons">
@@ -36,14 +38,13 @@
             </q-card-actions>
           </q-card>
         </q-dialog>
-        <q-btn round :icon="this.$route.name === 'historique' ? 'dashboard' : 'history'" class="q-mr-lg header-icons" @click="historiqueButton">
-          <q-tooltip class="bg-accent desktop-only">Afficher l'historique</q-tooltip>
-        </q-btn>
+        <q-btn :disable="this.$route.name === 'settings'" round :icon="this.$route.name === 'historique' ? 'dashboard' : 'history'" class="q-mr-lg header-icons" @click="historiqueButton"/>
+        <q-btn v-if="is_admin" round :icon="this.$route.name === 'settings' ? 'dashboard' : 'settings'" class="q-mr-lg header-icons" @click="settingsButton"/>
       </q-toolbar>
     </q-header>
     <q-drawer
       v-model="drawer"
-      :width="500"
+      :width="$q.screen.width * 0.275"
       :breakpoint="500"
       overlay
       bordered
@@ -55,18 +56,18 @@
           <div class="col-10">
             <h5>Historique</h5>
           </div>
-          <div class="col-auto q-my-auto q-ml-auto">
+          <div class="col-2 q-my-auto q-ml-auto">
             <q-btn round icon="clear" class="q-mr-md" @click="drawer = !drawer"></q-btn>
           </div>
         </div>
         <q-list v-if="this.getListeTransactions.historique">
           <HistoriqueComponent  v-for="transaction in this.getListeTransactions.historique" :key="transaction.id"
-                               :id="transaction.id"
-                               :montant="transaction.prix ? transaction.prix * transaction.quantite : transaction.montant"
-                               :libelle="transaction.libelle"
-                               :date="transaction.created_at"
-                               :type="transaction.quantite ? 'Achat' : 'Versement'"
-                               :quantite="transaction.quantite ? transaction.quantite : null"/>
+                                :id="transaction.id"
+                                :montant="transaction.prix ? transaction.prix * transaction.quantite : transaction.montant"
+                                :libelle="transaction.libelle"
+                                :date="transaction.created_at"
+                                :type="transaction.quantite ? 'Achat' : 'Versement'"
+                                :quantite="transaction.quantite ? transaction.quantite : null"/>
         </q-list>
         <span v-else>
           {{ this.getListeTransactions.message }}
@@ -91,12 +92,13 @@ export default defineComponent({
     return {
       nom: '',
       prenom: '',
+      is_admin: '',
       confirm: false,
       drawer: false
     }
   },
   methods: {
-    ...mapActions('userStore', ['getHistorique']),
+    ...mapActions('userStore', ['getHistorique', 'getAdminSettings']),
     removeTokenFromLocalStorage () {
       window.localStorage.clear()
       this.$router.push({ path: '/login' })
@@ -105,16 +107,27 @@ export default defineComponent({
       // Récupération des informations stockées dans le local storage
       this.nom = localStorage.getItem('nom')
       this.prenom = localStorage.getItem('prenom')
+      this.is_admin = localStorage.getItem('is_admin') !== 'false'
     },
     historiqueButton () {
       if (this.$q.platform.is.desktop) {
         this.drawer = !this.drawer
+        if (this.$route.name === 'historique') {
+          this.$router.push({ path: '/dashboard' })
+        }
       } else {
         if (this.$route.name === 'historique') {
           this.$router.push({ path: '/dashboard' })
         } else {
           this.$router.push({ path: '/historique' })
         }
+      }
+    },
+    settingsButton () {
+      if (this.$route.name === 'settings') {
+        this.$router.push({ path: '/dashboard' })
+      } else {
+        this.getAdminSettings()
       }
     }
   },

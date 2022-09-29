@@ -22,7 +22,7 @@
           </a>
         </div>
       </div>
-      <div class="col-auto q-mt-xl">
+      <div :class="this.$q.platform.is.mobile ? 'col-auto' : 'col-4'" class="q-mt-lg">
         <div class="row">
           <span id="solde" class="q-mx-auto">
             Solde :
@@ -30,10 +30,10 @@
           </span>
         </div>
         <div class="row">
-          <img src="~assets/home.jpg" alt="avatar" id="imgCafe" class="q-mx-auto q-mt-lg">
+          <img src="~assets/home.jpg" alt="avatar" id="imgCafe" class="q-mt-sm q-mx-auto">
         </div>
         <div class="row q-mb-xl">
-          <q-btn-group push class="q-mx-auto q-mt-lg">
+          <q-btn-group push class="q-mx-auto" :class="this.$q.platform.is.mobile ? 'q-mt-xl' : 'q-mt-sm'">
             <q-btn :disable="cafe.quantite === 1" push text-color="white" color="secondary" icon="remove" :size="this.$q.platform.is.mobile ? 'lg' : 'xl'" @click="cafe.quantite--" glossy style="border-right: 1px solid wheat"/>
             <q-btn push color="secondary" :size="this.$q.platform.is.mobile ? 'lg' : 'xl'" @click="functionAchatCafe" no-caps glossy>
               Acheter {{cafe.quantite}} café<span v-if="cafe.quantite > 1">s</span>
@@ -84,7 +84,6 @@
 
 <script>
 
-import { useQuasar } from 'quasar'
 import { mapActions, mapGetters } from 'vuex'
 import { ref } from 'vue'
 
@@ -104,15 +103,8 @@ export default {
     }
   },
   setup () {
-    const $q = useQuasar()
     return {
       versementForm: ref(false),
-      showNotif () {
-        $q.notify({
-          message: this.setNotification.message,
-          color: this.setNotification.color
-        })
-      },
       setUpWeather () {
         (function (d, s, id) {
           if (d.getElementById(id)) {
@@ -133,18 +125,12 @@ export default {
   },
   methods: {
     ...mapActions('userStore', ['achatCafe', 'effectuerVersement', 'getHistorique', 'getUserSolde']),
-    async functionAchatCafe () {
-      await this.achatCafe(this.cafe)
+    functionAchatCafe () {
+      this.achatCafe(this.cafe)
       this.cafe.quantite = 1
-      this.getHistorique()
-      await this.getUserSolde()
-      this.showNotif()
     },
-    async functionVersement () {
-      await this.effectuerVersement(this.versement)
-      this.getHistorique()
-      await this.getUserSolde()
-      this.showNotif()
+    functionVersement () {
+      this.effectuerVersement(this.versement)
     },
     resetFormVersement () {
       this.versement.montant = ''
@@ -152,19 +138,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('userStore', ['getSolde', 'getNotification']),
+    ...mapGetters('userStore', ['getSolde']),
     userSolde () {
       return this.getSolde
-    },
-    setNotification () {
-      return this.getNotification
     }
   },
   mounted () {
     this.$q.dark.set(false)
     this.setUpWeather()
     this.getUserSolde()
-    // this.getInfosFromLocalStorage()
   }
 }
 </script>
@@ -175,6 +157,7 @@ export default {
 }
 
 #imgCafe {
-  max-width: 100%
+  width: 90%;
+  height: auto;
 }
 </style>
