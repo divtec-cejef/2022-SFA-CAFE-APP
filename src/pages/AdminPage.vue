@@ -70,7 +70,7 @@ export default {
       get () { return this.getListUsers },
       set (val) { this.$store.commit('distributionsEnseignant/SET_SEL_FOUR', val) }
     },
-    // listUsers () {
+    // listUddsers () {
     //   return this.getListUsers
     // },
     settings () {
