@@ -9,10 +9,11 @@ import axios from 'axios'
 // for each client)
 const api = axios.create({
   baseURL: 'https://api-cafe.divtec.me/api/',
-  // timeout: 5000,
+  timeout: 5000,
   headers: {
     Accept: 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'access-control-allow-origin': '*'
   }
 })
 
