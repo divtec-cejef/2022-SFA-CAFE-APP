@@ -74,27 +74,40 @@ export default {
   name: 'FormRegisterComponent',
   data () {
     return {
-      registerForm: {
+      registerForm: { // Formulaire d'inscription
         nom: '',
         prenom: '',
         email: '',
         password: ''
       },
-      checkPassword: {
-        length: false,
-        capital: false,
-        number: false
+      checkPassword: { // Vérification du mot de passe
+        length: false, // Longueur
+        capital: false, // Majuscules
+        number: false // Nombres
       }
     }
   },
   methods: {
     ...mapActions('userStore', ['registerUser']),
+    /**
+     * Appelle l'action register du store
+     */
     submitForm () {
       this.registerUser(this.registerForm)
     },
+    /**
+     * Vérifie que l'email entré est valide
+     * @param email email entré par l'utilisateur
+     * @returns {boolean} retourne vrai si l'email est correcte, sinon faux
+     */
     validateEmail (email) {
       return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(email)
     },
+    /**
+     * Vérifie que le mot de passe entré est valide
+     * @param password mot de passe entré par l'utilisateur
+     * @returns {boolean} retourne vrai si le mot de passe est correcte, sinon faux
+     */
     validatePassword (password) {
       // Teste longueur
       this.checkPassword.length = this.registerForm.password.length >= 7

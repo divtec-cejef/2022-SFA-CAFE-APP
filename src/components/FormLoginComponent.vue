@@ -23,12 +23,13 @@
 
 <script>
 import { mapActions } from 'vuex'
+// import { api } from 'boot/axios'
 
 export default {
   name: 'FormLoginComponent',
   data () {
     return {
-      loginForm: {
+      loginForm: { // Formulaire de connexion
         email: '',
         password: ''
       }
@@ -36,7 +37,14 @@ export default {
   },
   methods: {
     ...mapActions('userStore', ['loginUser']),
+    /**
+     * Appelle l'action de login du store
+     */
     async submitForm () {
+      // Retourne un cookie CSRF afin de protéger le formulaire
+      // await api.get('https://api-cafe.divtec.me/sanctum/csrf-cookie', { withCredentials: true }).then(async response => {
+      //   await console.log(response.headers.get('set-cookies'))
+      // })
       await this.loginUser(this.loginForm)
     }
   }

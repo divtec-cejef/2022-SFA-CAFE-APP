@@ -13,6 +13,8 @@
           <q-menu
             transition-show="jump-down"
             transition-hide="jump-up"
+            anchor="bottom right"
+            self="top right"
             :offset="[0, 15]"
           >
             <q-list style="min-width: 200px">
@@ -92,23 +94,32 @@ export default defineComponent({
     return {
       nom: '',
       prenom: '',
-      is_admin: '',
-      confirm: false,
-      drawer: false
+      is_admin: '', // Booléen qui vérifie si l'utilisateur est admin ou non
+      confirm: false, // Variable qui s'occupe d'afficher ou non le menu utilisateur
+      drawer: false // Variable qui s'occupe d'afficher ou non l'historique
     }
   },
   methods: {
-    ...mapActions('userStore', ['getHistorique', 'getAdminSettings']),
+    ...mapActions('userStore', ['getHistorique']),
+    /**
+     * Supprime les éléments du localStorage du navigateur
+     */
     removeTokenFromLocalStorage () {
       window.localStorage.clear()
       this.$router.push({ path: '/login' })
     },
+    /**
+     * Récupération des éléments du localStorage du navigateur
+     */
     getInfosFromLocalStorage () {
       // Récupération des informations stockées dans le local storage
       this.nom = localStorage.getItem('nom')
       this.prenom = localStorage.getItem('prenom')
       this.is_admin = localStorage.getItem('is_admin') !== 'false'
     },
+    /**
+     * Change la route du bouton historique en fonction du nom de la vue active
+     */
     historiqueButton () {
       if (this.$q.platform.is.desktop) {
         this.drawer = !this.drawer
@@ -123,16 +134,23 @@ export default defineComponent({
         }
       }
     },
+    /**
+     * Change la route du bouton settings en fonction du nom de la vue active
+     */
     settingsButton () {
       if (this.$route.name === 'settings') {
         this.$router.push({ path: '/dashboard' })
       } else {
-        this.getAdminSettings()
+        this.$router.push({ path: '/settings' })
       }
     }
   },
   computed: {
     ...mapGetters('userStore', ['getTransactions']),
+    /**
+     * Appelle le getter du store qui récupère les transactions réalisées par l'utilisateur
+     * @returns {string} Retourne les transactions de l'utilisateur
+     */
     getListeTransactions () {
       return this.getTransactions
     }

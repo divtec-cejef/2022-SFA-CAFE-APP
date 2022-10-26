@@ -47,16 +47,23 @@ export default {
   name: 'LoginPage',
   components: { FormRegisterComponent, FormLoginComponent },
   mounted () {
-    this.$q.dark.set(true)
+    this.$q.dark.set(true) // Active le thème sombre
   },
   methods: {
     ...mapMutations('userStore', ['CHANGE_FORM_LOGIN_STATE']),
+    /**
+     * Appelle une mutation du store pour alterner les deux formulaires (register, login)
+     */
     formLoginState () {
       this.CHANGE_FORM_LOGIN_STATE()
     }
   },
   computed: {
     ...mapGetters('userStore', ['getFormRegisterState']),
+    /**
+     * Appelle le getter du store qui récupère l'état de la variable qui alterne les formulaires
+     * @returns {string} Retourne l'état de la variable (true, false)
+     */
     formState () {
       return this.getFormRegisterState
     }

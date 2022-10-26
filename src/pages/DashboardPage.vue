@@ -92,61 +92,90 @@ export default {
   data () {
     return {
       cafe: {
-        libelle: 'Achat de café',
-        quantite: 1,
-        prix: 0.85 // Prix du café
+        libelle: '', // Libellé de l'achat de café
+        quantite: 1, // Quantité par défaut
+        prix: '' // Prix du café
       },
       versement: {
-        libelle: '',
-        montant: ''
-      }
-    }
-  },
-  setup () {
-    return {
-      versementForm: ref(false),
-      setUpWeather () {
-        (function (d, s, id) {
-          if (d.getElementById(id)) {
-            if (window.__TOMORROW__) {
-              window.__TOMORROW__.renderWidget()
-            }
-            return
-          }
-          const fjs = d.getElementsByTagName(s)[0]
-          const js = d.createElement(s)
-          js.id = id
-          js.src = 'https://www.tomorrow.io/v1/widget/sdk/sdk.bundle.min.js'
-
-          fjs.parentNode.insertBefore(js, fjs)
-        })(document, 'script', 'tomorrow-sdk')
-      }
+        libelle: '', // Libellé du vermsement
+        montant: '' // Montant du versement
+      },
+      versementForm: ref(false) // Variable qui s'occupe d'afficher ou non la pop-up de versement
     }
   },
   methods: {
-    ...mapActions('userStore', ['achatCafe', 'effectuerVersement', 'getHistorique', 'getUserSolde']),
+    ...mapActions('userStore', ['achatCafe', 'effectuerVersement', 'getHistorique', 'getUserSolde', 'getUserSettings']),
+    /**
+     * Appelle l'action du store qui achète un/des café(s)
+     * Reset automatiquement la quantité à 1 café
+     */
     functionAchatCafe () {
       this.achatCafe(this.cafe)
       this.cafe.quantite = 1
     },
+    /**
+     * Appelle l'action du store qui crée un versement
+     */
     functionVersement () {
       this.effectuerVersement(this.versement)
     },
+    /**
+     * Réinitialise le formulaire de versement
+     */
     resetFormVersement () {
       this.versement.montant = ''
       this.versement.libelle = ''
+    },
+    /**
+     * Initialise le prix et le libellé du café
+     */
+    setConstant () {
+      this.cafe.libelle = this.settings.find(val => val.nom === 'Libellé achat de café').valeur
+      this.cafe.prix = this.settings.find(val => val.nom === 'Prix du café').valeur
+    },
+    /**
+     * Initialise la météo
+     */
+    setUpWeather () {
+      (function (d, s, id) {
+        if (d.getElementById(id)) {
+          if (window.__TOMORROW__) {
+            window.__TOMORROW__.renderWidget()
+          }
+          return
+        }
+        const fjs = d.getElementsByTagName(s)[0]
+        const js = d.createElement(s)
+        js.id = id
+        js.src = 'https://www.tomorrow.io/v1/widget/sdk/sdk.bundle.min.js'
+
+        fjs.parentNode.insertBefore(js, fjs)
+      })(document, 'script', 'tomorrow-sdk')
     }
   },
   computed: {
-    ...mapGetters('userStore', ['getSolde']),
+    ...mapGetters('userStore', ['getSolde', 'getSettings']),
+    /**
+     * Appelle le getter du store qui récupère le solde utilisateur
+     * @returns {string} Retourne le solde utilisateur
+     */
     userSolde () {
       return this.getSolde
+    },
+    /**
+     * Appelle le getter du store qui récupère les paramètres (constantes) de l'application
+     * @returns {string} Retourne les paramètres
+     */
+    settings () {
+      return this.getSettings
     }
   },
-  mounted () {
-    this.$q.dark.set(false)
+  async mounted () {
+    this.$q.dark.set(false) // Désactive le thème sombre
     this.setUpWeather()
-    this.getUserSolde()
+    await this.getUserSolde()
+    await this.getUserSettings()
+    this.setConstant()
   }
 }
 </script>

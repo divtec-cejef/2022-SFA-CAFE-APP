@@ -28,12 +28,16 @@ export default {
   },
   computed: {
     ...mapGetters('userStore', ['getTransactions']),
+    /**
+     * Appelle le getter du store qui récupère les transactions réalisées par l'utilisateur
+     * @returns {string} Retourne les transactions réalisées par l'utilisateur
+     */
     getListeTransactions () {
       return this.getTransactions
     }
   },
   mounted () {
-    this.getHistorique()
+    this.getHistorique() // Appelle l'action du store pour récupérer toutes les transactions de l'utilisateur
   }
 }
 </script>

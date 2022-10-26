@@ -75,34 +75,37 @@ export default {
   name: 'HistoriqueComponent',
   data () {
     return {
-      confirm: false
+      confirm: false // Variable qui s'occupe d'afficher ou non la pop-up de confirmation de suppression
     }
   },
   props: {
-    id: {
+    id: { // ID de la transaction
       type: Number,
       required: true
     },
-    type: {
+    type: { // Type de la transaction : Achat ou Versement
       type: String,
       required: true
     },
-    date: {
+    date: { // Date de réalisation de la transaction
       type: String,
       required: true
     },
-    libelle: {
+    libelle: { // Libellé de la transaction
       type: String,
       required: true
     },
-    montant: {
+    montant: { // Montant ou prix de la transaction
       type: Number,
       required: true
     },
-    quantite: Number
+    quantite: Number // Si la transaction est un achat, il s'agit de la quantité d'achat du produit
   },
   methods: {
     ...mapActions('userStore', ['supprimerTransaction']),
+    /**
+     * Appelle l'action de suppression d'une transaction du store
+     */
     async removeTransaction () {
       await this.supprimerTransaction({ id: this.id, type: this.type })
     }
